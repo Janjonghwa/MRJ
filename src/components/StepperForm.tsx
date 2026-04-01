@@ -108,13 +108,16 @@ export default function StepperForm() {
     <div key="step1" className="flex flex-col gap-6 items-center">
       <h2 className="text-2xl text-white font-serif text-center">어떤 성별로 분석해 드릴까요?</h2>
       <div className="flex gap-4 w-full">
-        {['남성', '여성'].map(g => (
+        {[
+          { label: '남성', value: 'male' },
+          { label: '여성', value: 'female' }
+        ].map(g => (
           <button
-            key={g}
-            onClick={() => { updateForm('gender', g); setStep(2); }}
-            className={`flex-1 py-4 rounded-xl border transition-all duration-300 font-serif text-lg tracking-wide ${formData.gender === g ? 'bg-[var(--color-hanok-accent)] text-black border-transparent shadow-[0_0_15px_rgba(229,192,123,0.4)]' : 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10 hover:border-[var(--color-hanok-accent)]/50'}`}
+            key={g.value}
+            onClick={() => { updateForm('gender', g.value); setStep(2); }}
+            className={`flex-1 py-4 rounded-xl border transition-all duration-300 font-serif text-lg tracking-wide ${formData.gender === g.value ? 'bg-[#E5C07B] text-black border-transparent shadow-[0_0_15px_rgba(229,192,123,0.4)]' : 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10 hover:border-[#E5C07B]/50'}`}
           >
-            {g}
+            {g.label}
           </button>
         ))}
       </div>
