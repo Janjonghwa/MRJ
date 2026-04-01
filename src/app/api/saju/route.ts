@@ -1,15 +1,17 @@
 import { NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
 import { calculateFourPillars } from 'manseryeok';
+
+export const maxDuration = 60; // Vercel 서버 타임아웃 60초로 연장
 
 // Initialize clients safely
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+// Allow using either GEMINI_API_KEY variable (if they just swapped string) or GROQ_API_KEY
+const groqApiKey = process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY || '';
 
 export async function POST(req: Request) {
   try {
@@ -54,8 +56,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // 4. Generate Reading via Gemini
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    // 4. Generate Reading via Groq
 
     let categoryInstruction = "";
     if (category?.includes("오늘")) {
@@ -105,8 +106,27 @@ export async function POST(req: Request) {
 - (장점은 키우고 위험은 피하는 실전 팁 2)
 `;
 
-    const result = await model.generateContent(prompt);
-    const textReading = result.response.text();
+    const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${groqApiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "llama-3.1-8b-instant",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.7,
+      })
+    });
+
+    if (!groqResponse.ok) {
+      const errorData = await groqResponse.json();
+      console.error("Groq API Error:", errorData);
+      throw new Error("AI 생성 오류 (Groq)");
+    }
+
+    const result = await groqResponse.json();
+    const textReading = result.choices[0].message.content;
 
     // 5. Save to Supabase (Fire and forget)
     if (supabase) {
