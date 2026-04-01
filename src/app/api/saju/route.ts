@@ -10,8 +10,8 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
-// Allow using either GEMINI_API_KEY variable (if they just swapped string) or GROQ_API_KEY
-const groqApiKey = process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY || '';
+// Allow using either GEMINI_API_KEY variable (if they just swapped string) or OPENROUTER_API_KEY
+const apiKey = process.env.OPENROUTER_API_KEY || process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY || '';
 
 export async function POST(req: Request) {
   try {
@@ -106,26 +106,26 @@ export async function POST(req: Request) {
 - (장점은 키우고 위험은 피하는 실전 팁 2)
 `;
 
-    const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    const aiResponseFinal = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${groqApiKey}`,
+        "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
+        model: "qwen-2.5-32b", // Groq의 Qwen 32B 기본 접근 이름 (호환용) 하지만 원하시면 변경 가능
         messages: [{ role: "user", content: prompt }],
         temperature: 0.7,
       })
     });
 
-    if (!groqResponse.ok) {
-      const errorData = await groqResponse.json();
+    if (!aiResponseFinal.ok) {
+      const errorData = await aiResponseFinal.json();
       console.error("Groq API Error:", errorData);
       throw new Error("AI 생성 오류 (Groq)");
     }
 
-    const result = await groqResponse.json();
+    const result = await aiResponseFinal.json();
     const textReading = result.choices[0].message.content;
 
     // 5. Save to Supabase (Fire and forget)
