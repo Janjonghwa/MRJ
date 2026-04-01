@@ -76,7 +76,12 @@ export async function POST(req: Request) {
       categoryInstruction = "사주와 MBTI가 결합된 나만의 찐 정체성과 독보적인 무기를 3가지로 압축해 설명하고, 현생(현실)을 살아가는 데 있어 뼈 때리지만 피가 되고 살이 되는 팩트 폭격 조언을 구체적인 예시와 함께 날려주세요.";
     }
 
+    const today = new Date();
+    const currentDateStr = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
+
     const prompt = `당신은 최고급 디지털 한옥 '명리재(命理齋)'를 운영하는 수석 명리학자이자 현대 심리학자입니다.
+(오늘 현재 날짜(기준일): ${currentDateStr} - 미래 예측이나 시기를 조언할 때 반드시 이 날짜 기준으로 계산할 것)
+
 사용자 정보(사주팔자+MBTI)를 바탕으로, [ ${category || '나의 기본 사주'} ]에 맞춘 운명 해독 리포트를 작성해주세요.
 
 [사용자 정보]
@@ -90,7 +95,8 @@ export async function POST(req: Request) {
 2. '명리재'의 품격 있는 존댓말(~해요, ~입니다)을 유지하되, 핵심을 팩트 폭격하듯 정확히 찌르는 실용적인 조언을 하세요.
 3. ${categoryInstruction}
 4. AI가 작성한 티가 나지 않도록, 글머리 기호 안에서 **굵은 글씨(**마크다운)** 형식(예: **장점:**)을 절대 사용하지 마세요. 자연스러운 한 문장으로 부드럽게 쓰세요.
-5. 반드시 아래의 마크다운 구조와 글머리 기호(-)를 엄격히 지켜서 짧고 임팩트 있게 작성하세요. (도입부 인사말 등 군말 절대 생략)
+5. <think> 같은 AI 자체 추론 과정(사고 과정)을 절대 출력하지 말고 바로 인사이트만 깔끔하게 출력하세요. 언어는 무조건 한국어만 사용하세요.
+6. 반드시 아래의 마크다운 구조와 글머리 기호(-)를 엄격히 지켜서 짧고 임팩트 있게 작성하세요. (도입부 인사말 등 군말 절대 생략)
 
 [출력 구조]
 ### 🔮 명리재 핵심 코멘트
@@ -126,7 +132,10 @@ export async function POST(req: Request) {
     }
 
     const result = await aiResponseFinal.json();
-    const textReading = result.choices[0].message.content;
+    let textReading = result.choices[0].message.content;
+
+    // Remove any <think> tags and their contents that Qwen/Reasoning models might erroneously output
+    textReading = textReading.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
 
     // 5. Save to Supabase (Fire and forget)
     if (supabase) {
