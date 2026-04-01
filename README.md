@@ -3,6 +3,8 @@
 > 당신의 사주와 MBTI가 그리는 단 하나의 이야기.
 > 현대적인 UI/UX와 전통 명리학, 그리고 AI가 결합된 프리미엄 초개인화 사주 분석 웹 애플리케이션입니다.
 
+<img width="2520" height="1276" alt="image" src="https://github.com/user-attachments/assets/b0784e09-50b3-4035-bdaa-4e7e571133a6" />
+
 ---
 
 ## 📖 목차
