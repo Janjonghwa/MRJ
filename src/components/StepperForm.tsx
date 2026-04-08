@@ -1,12 +1,25 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Share2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 export default function StepperForm() {
+  const LOADING_MESSAGES = [
+    "오행(木火土金水) 밸런스 패치 진행 중 ☯️...",
+    "서버실에 향 피우고 있습니다 🙇‍♂️...",
+    "타고난 팔자의 숨겨진 코드를 해독하고 있어요 📜",
+    "올해 숨겨진 재물운을 영혼까지 끌어모으는 중... 💸",
+    "내 팔자에 숨은 귀인 레이더망 가동 중 📡",
+    "일 안 하고 돈 벌 방법이 있는지 분석 중입니다 🧐",
+    "우주가 점지해 준 내 인연 언제 오나 탐색 중 👀",
+    "명리학 빅데이터 베이스에 접속 중 🔌",
+    "사주팔자 최적화 알고리즘 구동 중 ⚙️",
+    "오아시스 같은 나의 휴식처는 어디일까 찾는 중 🏖️"
+  ];
+
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({
     gender: '',
@@ -20,8 +33,20 @@ export default function StepperForm() {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const [result, setResult] = useState<{ reading: string; sajuData: any } | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isLoading) {
+      setLoadingMessageIndex(Math.floor(Math.random() * LOADING_MESSAGES.length));
+      interval = setInterval(() => {
+        setLoadingMessageIndex(prev => (prev + 1) % LOADING_MESSAGES.length);
+      }, 2500);
+    }
+    return () => clearInterval(interval);
+  }, [isLoading]);
 
   const prevStep = () => setStep(s => Math.max(0, s - 1));
   const nextStep = () => setStep(s => s + 1);
@@ -108,7 +133,7 @@ export default function StepperForm() {
 
     // Step 1: Gender
     <div key="step1" className="flex flex-col gap-6 items-center">
-      <h2 className="text-2xl text-white font-serif text-center">어떤 성별로 분석해 드릴까요?</h2>
+      <h2 className="text-2xl text-white font-serif text-center">당신의 성별을 알려주세요</h2>
       <div className="flex gap-4 w-full">
         {[
           { label: '남성', value: 'male' },
@@ -207,7 +232,7 @@ export default function StepperForm() {
     <div key="step5" className="flex flex-col gap-6">
       <h2 className="text-2xl text-white font-serif text-center">어떤 결과가 가장 궁금하신가요?</h2>
       <div className="grid grid-cols-2 gap-3">
-        {['나의 기본 사주', '오늘의 운세', '올해의 운세', '취업 및 직무', '연애 및 배우자', '재물 및 투자', '건강 및 멘탈'].map((c, i) => (
+        {['☯️ 나의 기본 사주', '☀️ 오늘의 운세', '✨ 올해의 운세', '💼 취업 및 직무', '❤️ 연애 및 배우자', '💰 재물 및 투자', '🌿 건강 및 멘탈'].map((c, i) => (
           <button
             key={c}
             onClick={() => { updateForm('category', c); }}
@@ -229,9 +254,20 @@ export default function StepperForm() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 gap-6">
-        <Loader2 className="w-12 h-12 animate-spin text-[var(--color-hanok-accent)]" />
-        <h2 className="text-xl font-serif animate-pulse">명식을 분석하고 있습니다...</h2>
+      <div className="flex flex-col items-center justify-center py-12 gap-8 w-full max-w-xl mx-auto">
+        <Loader2 className="w-16 h-16 animate-spin text-[var(--color-hanok-accent)] drop-shadow-[0_0_15px_rgba(229,192,123,0.5)]" />
+        <AnimatePresence mode="wait">
+          <motion.h2
+            key={loadingMessageIndex}
+            initial={{ opacity: 0, y: 10, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
+            transition={{ duration: 0.4 }}
+            className="text-lg md:text-2xl font-serif text-white tracking-wide text-center"
+          >
+            {LOADING_MESSAGES[loadingMessageIndex]}
+          </motion.h2>
+        </AnimatePresence>
       </div>
     );
   }
@@ -257,21 +293,21 @@ export default function StepperForm() {
         {/* Result Content Area - Truly Wide Editorial Layout */}
         <div className="bg-black/40 border border-white/10 rounded-[3rem] p-4 md:p-16 backdrop-blur-2xl shadow-2xl ring-1 ring-white/5">
           <div className="prose prose-invert prose-stone max-w-none font-sans leading-relaxed text-left text-white/90 px-4 md:px-0">
-            <ReactMarkdown 
+            <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
-                h3: ({node, ...props}) => (
+                h3: ({ node, ...props }) => (
                   <h3 className="text-2xl md:text-4xl font-serif text-[var(--color-hanok-accent)] mt-16 first:mt-0 mb-8 pb-4 border-b border-white/10 tracking-tight" {...props} />
                 ),
-                h4: ({node, ...props}) => (
+                h4: ({ node, ...props }) => (
                   <h4 className="text-xl md:text-2xl font-bold text-white mt-12 mb-6 flex items-center gap-3 before:content-[''] before:w-1.5 before:h-6 before:bg-[var(--color-hanok-accent)] before:rounded-full" {...props} />
                 ),
-                p: ({node, ...props}) => <p className="mb-8 leading-[1.8] break-keep text-[17px] md:text-lg text-white/80" {...props} />,
-                ul: ({node, ...props}) => <ul className="list-none space-y-4 my-8 pl-0" {...props} />,
-                li: ({node, ...props}) => (
+                p: ({ node, ...props }) => <p className="mb-8 leading-[1.8] break-keep text-[17px] md:text-lg text-white/80" {...props} />,
+                ul: ({ node, ...props }) => <ul className="list-none space-y-4 my-8 pl-0" {...props} />,
+                li: ({ node, ...props }) => (
                   <li className="relative pl-8 text-[17px] md:text-lg leading-relaxed text-white/70 before:content-['•'] before:absolute before:left-0 before:text-[var(--color-hanok-accent)] before:font-black before:text-2xl" {...props} />
                 ),
-                strong: ({node, ...props}) => <strong className="text-[var(--color-hanok-accent)] font-bold px-1" {...props} />,
+                strong: ({ node, ...props }) => <strong className="text-[var(--color-hanok-accent)] font-bold px-1" {...props} />,
                 hr: () => <hr className="my-16 border-white/5" />,
               }}
             >
