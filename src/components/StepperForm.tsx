@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Share2 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function StepperForm() {
   const [step, setStep] = useState(0);
@@ -252,11 +254,22 @@ export default function StepperForm() {
           <h2 className="text-3xl md:text-4xl font-serif text-white">당신의 사주 해석</h2>
           <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-12 h-px bg-[var(--color-hanok-accent)] opacity-50" />
         </div>
-        <div className="prose prose-invert prose-stone max-w-none font-serif leading-loose text-justify text-white/80 space-y-6">
-          {/* We will render markdown simply by mapping lines for now, or using a markdown library later */}
-          {result.reading.split('\n').filter((l: string) => l.trim().length > 0).map((paragraph: string, i: number) => (
-            <p key={i} className="text-lg">{paragraph.replace(/#/g, '').replace(/\*\*/g, '')}</p>
-          ))}
+        <div className="prose prose-invert prose-stone max-w-none font-sans leading-relaxed text-justify text-white/90 space-y-2">
+          <ReactMarkdown 
+            remarkPlugins={[remarkGfm]}
+            components={{
+              h3: ({node, ...props}) => <h3 className="text-2xl font-serif text-[var(--color-hanok-accent)] mt-8 mb-4 border-b border-[var(--color-hanok-accent)]/30 pb-2" {...props} />,
+              h4: ({node, ...props}) => <h4 className="text-lg font-bold text-white/100 mt-6 mb-2 flex items-center gap-2" {...props} />,
+              p: ({node, ...props}) => <p className="mb-4 leading-loose break-keep" {...props} />,
+              ul: ({node, ...props}) => <ul className="list-none space-y-2 my-4 pl-0" {...props} />,
+              li: ({node, ...props}) => (
+                <li className="relative pl-6 before:content-['•'] before:absolute before:left-0 before:text-[var(--color-hanok-accent)] before:font-bold" {...props} />
+              ),
+              strong: ({node, ...props}) => <strong className="text-[var(--color-hanok-accent)] font-bold" {...props} />,
+            }}
+          >
+            {result.reading}
+          </ReactMarkdown>
         </div>
         <div className="flex flex-col gap-3 mt-8">
           <button onClick={handleShare} className="w-full py-4 flex flex-row items-center justify-center gap-2 text-black font-bold text-lg tracking-widest rounded-xl bg-[#E5C07B] transition-all hover:brightness-110 shadow-[0_0_15px_rgba(229,192,123,0.3)]">
