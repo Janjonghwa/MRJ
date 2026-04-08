@@ -149,9 +149,9 @@ ${categoryInstruction}
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile", // Llama 3.3 70B 모델로 변경 (Groq)
+        model: "openai/gpt-oss-120b", // OpenRouter의 GPT-OSS 120B 모델로 변경
         messages: [{ role: "user", content: prompt }],
-        temperature: 0.85,
+        temperature: 0.7,
       })
     });
 
