@@ -40,13 +40,13 @@ export async function POST(req: Request) {
       try {
         const { data } = await supabase
           .from('SajuCache')
-          .select('reading')
-          .eq('cache_key', cacheKey)
+          .select('llm_result')
+          .eq('hash_key', cacheKey)
           .single();
 
-        if (data?.reading) {
+        if (data?.llm_result) {
           return NextResponse.json({
-            reading: data.reading,
+            reading: data.llm_result,
             sajuData: { hanja: sajuHanja, korean: sajuKorean }
           });
         }
@@ -54,9 +54,6 @@ export async function POST(req: Request) {
         console.warn('Cache read error:', cacheErr);
       }
     }
-
-
-
 
     // ============================================
     // 🔥 MZ 타겟 카테고리별 지시사항 (대폭 업그레이드)
@@ -267,13 +264,12 @@ ${categoryInstruction}
 
     const result = await aiResponseFinal.json();
     let textReading = result.choices[0].message.content;
-
     textReading = textReading.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
 
     if (supabase) {
       supabase
         .from('SajuCache')
-        .insert([{ cache_key: cacheKey, reading: textReading }])
+        .insert([{ hash_key: cacheKey, llm_result: textReading }])
         .then(({ error }) => {
           if (error) console.error('Cache save error:', error);
         });
