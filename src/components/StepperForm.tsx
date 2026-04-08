@@ -249,32 +249,35 @@ export default function StepperForm() {
   if (result) {
     return (
       <div className="flex flex-col gap-10 animate-in fade-in zoom-in-95 duration-1000">
-        <div className="text-center relative">
-          <p className="text-lg tracking-[0.5em] text-[var(--color-hanok-accent)] mb-4">{result.sajuData?.hanja || ''}</p>
-          <h2 className="text-3xl md:text-4xl font-serif text-white">당신의 사주 해석</h2>
-          <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-12 h-px bg-[var(--color-hanok-accent)] opacity-50" />
+        {/* Title Section - Cleaned up as requested */}
+        <div className="text-center py-6">
+          <h2 className="text-3xl md:text-5xl font-serif text-white tracking-tight">당신의 사주 해석</h2>
         </div>
-        <div className="prose prose-invert prose-stone max-w-none font-sans leading-relaxed text-justify text-white/90">
-          <ReactMarkdown 
-            remarkPlugins={[remarkGfm]}
-            components={{
-              h3: ({node, ...props}) => (
-                <h3 className="text-2xl md:text-3xl font-serif text-[var(--color-hanok-accent)] mt-12 mb-6 border-b border-[var(--color-hanok-accent)]/20 pb-4 tracking-tight" {...props} />
-              ),
-              h4: ({node, ...props}) => (
-                <h4 className="text-xl font-bold text-white mt-10 mb-4 flex items-center gap-3 before:content-[''] before:w-1 before:h-6 before:bg-[var(--color-hanok-accent)] before:rounded-full" {...props} />
-              ),
-              p: ({node, ...props}) => <p className="mb-6 leading-loose break-keep text-lg text-white/80" {...props} />,
-              ul: ({node, ...props}) => <ul className="list-none space-y-3 my-6 pl-0" {...props} />,
-              li: ({node, ...props}) => (
-                <li className="relative pl-7 text-[17px] leading-relaxed before:content-['•'] before:absolute before:left-0 before:text-[var(--color-hanok-accent)] before:font-black before:text-xl" {...props} />
-              ),
-              strong: ({node, ...props}) => <strong className="text-[var(--color-hanok-accent)] font-bold px-1" {...props} />,
-              hr: () => <hr className="my-12 border-white/10" />,
-            }}
-          >
-            {result.reading}
-          </ReactMarkdown>
+
+        {/* Result Content Area - Editorial Card Style */}
+        <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-6 md:p-12 backdrop-blur-sm">
+          <div className="prose prose-invert prose-stone max-w-none font-sans leading-relaxed text-left text-white/90">
+            <ReactMarkdown 
+              remarkPlugins={[remarkGfm]}
+              components={{
+                h3: ({node, ...props}) => (
+                  <h3 className="text-2xl md:text-4xl font-serif text-[var(--color-hanok-accent)] mt-16 first:mt-0 mb-8 pb-4 border-b border-white/10 tracking-tight" {...props} />
+                ),
+                h4: ({node, ...props}) => (
+                  <h4 className="text-xl md:text-2xl font-bold text-white mt-12 mb-6 flex items-center gap-3 before:content-[''] before:w-1.5 before:h-6 before:bg-[var(--color-hanok-accent)] before:rounded-full" {...props} />
+                ),
+                p: ({node, ...props}) => <p className="mb-8 leading-[1.8] break-keep text-[17px] md:text-lg text-white/80" {...props} />,
+                ul: ({node, ...props}) => <ul className="list-none space-y-4 my-8 pl-0" {...props} />,
+                li: ({node, ...props}) => (
+                  <li className="relative pl-8 text-[17px] md:text-lg leading-relaxed text-white/70 before:content-['•'] before:absolute before:left-0 before:text-[var(--color-hanok-accent)] before:font-black before:text-2xl" {...props} />
+                ),
+                strong: ({node, ...props}) => <strong className="text-[var(--color-hanok-accent)] font-bold px-1" {...props} />,
+                hr: () => <hr className="my-16 border-white/5" />,
+              }}
+            >
+              {result.reading}
+            </ReactMarkdown>
+          </div>
         </div>
         <div className="flex flex-col gap-3 mt-8">
           <button onClick={handleShare} className="w-full py-4 flex flex-row items-center justify-center gap-2 text-black font-bold text-lg tracking-widest rounded-xl bg-[#E5C07B] transition-all hover:brightness-110 shadow-[0_0_15px_rgba(229,192,123,0.3)]">
