@@ -254,18 +254,23 @@ export default function StepperForm() {
           <h2 className="text-3xl md:text-4xl font-serif text-white">당신의 사주 해석</h2>
           <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-12 h-px bg-[var(--color-hanok-accent)] opacity-50" />
         </div>
-        <div className="prose prose-invert prose-stone max-w-none font-sans leading-relaxed text-justify text-white/90 space-y-2">
+        <div className="prose prose-invert prose-stone max-w-none font-sans leading-relaxed text-justify text-white/90">
           <ReactMarkdown 
             remarkPlugins={[remarkGfm]}
             components={{
-              h3: ({node, ...props}) => <h3 className="text-2xl font-serif text-[var(--color-hanok-accent)] mt-8 mb-4 border-b border-[var(--color-hanok-accent)]/30 pb-2" {...props} />,
-              h4: ({node, ...props}) => <h4 className="text-lg font-bold text-white/100 mt-6 mb-2 flex items-center gap-2" {...props} />,
-              p: ({node, ...props}) => <p className="mb-4 leading-loose break-keep" {...props} />,
-              ul: ({node, ...props}) => <ul className="list-none space-y-2 my-4 pl-0" {...props} />,
-              li: ({node, ...props}) => (
-                <li className="relative pl-6 before:content-['•'] before:absolute before:left-0 before:text-[var(--color-hanok-accent)] before:font-bold" {...props} />
+              h3: ({node, ...props}) => (
+                <h3 className="text-2xl md:text-3xl font-serif text-[var(--color-hanok-accent)] mt-12 mb-6 border-b border-[var(--color-hanok-accent)]/20 pb-4 tracking-tight" {...props} />
               ),
-              strong: ({node, ...props}) => <strong className="text-[var(--color-hanok-accent)] font-bold" {...props} />,
+              h4: ({node, ...props}) => (
+                <h4 className="text-xl font-bold text-white mt-10 mb-4 flex items-center gap-3 before:content-[''] before:w-1 before:h-6 before:bg-[var(--color-hanok-accent)] before:rounded-full" {...props} />
+              ),
+              p: ({node, ...props}) => <p className="mb-6 leading-loose break-keep text-lg text-white/80" {...props} />,
+              ul: ({node, ...props}) => <ul className="list-none space-y-3 my-6 pl-0" {...props} />,
+              li: ({node, ...props}) => (
+                <li className="relative pl-7 text-[17px] leading-relaxed before:content-['•'] before:absolute before:left-0 before:text-[var(--color-hanok-accent)] before:font-black before:text-xl" {...props} />
+              ),
+              strong: ({node, ...props}) => <strong className="text-[var(--color-hanok-accent)] font-bold px-1" {...props} />,
+              hr: () => <hr className="my-12 border-white/10" />,
             }}
           >
             {result.reading}
