@@ -19,9 +19,9 @@ export default function Home() {
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black/80 via-black/60 to-black/90 z-0" />
 
       {/* Main Content */}
-      <div className="z-10 w-full max-w-5xl mt-12 md:mt-24 px-4">
-        <header className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-serif text-[var(--color-hanok-accent)] mb-6 tracking-normal drop-shadow-lg">명리재(命理齋)</h1>
+      <div className="z-10 w-full max-w-7xl mt-8 md:mt-20 px-4">
+        <header className="text-center mb-16">
+          <h1 className="text-5xl md:text-7xl font-serif text-[var(--color-hanok-accent)] mb-6 tracking-normal drop-shadow-lg">명리재(命理齋)</h1>
           <p className="text-sm md:text-base font-sans tracking-[0.3em] text-white/70 uppercase">천 년의 데이터로 당신의 잠재력을 해독합니다</p>
         </header>
 
