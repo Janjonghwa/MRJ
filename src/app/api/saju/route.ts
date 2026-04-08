@@ -13,7 +13,7 @@ const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabase
 // Use Groq API Key and specific model name as requested
 const apiKey = process.env.GROQ_API_KEY || '';
 const apiUrl = "https://api.groq.com/openai/v1/chat/completions";
-const modelId = "qwen/qwen3-32b";
+const modelId = "openai/gpt-oss-120b";
 
 export async function POST(req: Request) {
   try {
@@ -205,13 +205,13 @@ export async function POST(req: Request) {
 - 요청 카테고리: ${category || '종합운'}
 
 [말투 규칙] ⚠️ 이거 진짜 중요함
-1. 한국어만 사용. 한자 절대 금지(MBTI 같은 영어 고유명사만 예외).
+1. 한국어만 사용. (MBTI 같은 영어 고유명사만 예외).
 2. 마크다운 굵은 글씨(**)는 내가 강조하라고 지정한 항목(예: **키**, **비주얼**, **내면**, **라이프스타일**, **DO**, **DON'T** 등)에만 정확히 사용해. 일반 문장 중간에 아스테리스크를 막 쓰면 절대 안 돼.
 3. <think> 같은 태그 출력 절대 금지.
 4. 반말과 존댓말 적절히 섞어서 친근하게.
 5. 이모지 적극 활용해서 가독성 높이기 (단, 한 문장에 3개 이상 남발 금지).
 6. "~입니다", "~습니다"로 끝나는 딱딱한 문장 금지.
-7. MZ 감성 단어 사용: 개이득, 손절, 갓생, 킹받다, 버프, 디버프, 레벨업 등.
+7. MZ 감성 단어 사용: 개이득, 손절, 갓생, 킹받다, 버프, 디버프, 레벨업,감다살, 감다뒤, 싹싹김치, 종노플예, 위쑤시개 등.
 8. 모호한 표현 금지. "좋을 수도", "나쁠 수도" 이런 말 쓰면 0점. 단정 지어서 말할 것.
 9. 되도록 예시와 동일한 출력보단 창의적이고 독창적인 결과물을 만들어줘.
 
