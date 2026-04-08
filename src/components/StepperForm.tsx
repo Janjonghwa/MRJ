@@ -42,7 +42,13 @@ export default function StepperForm() {
     if (isLoading) {
       setLoadingMessageIndex(Math.floor(Math.random() * LOADING_MESSAGES.length));
       interval = setInterval(() => {
-        setLoadingMessageIndex(prev => (prev + 1) % LOADING_MESSAGES.length);
+        setLoadingMessageIndex(prev => {
+          let nextIndex;
+          do {
+            nextIndex = Math.floor(Math.random() * LOADING_MESSAGES.length);
+          } while (nextIndex === prev);
+          return nextIndex;
+        });
       }, 2500);
     }
     return () => clearInterval(interval);
