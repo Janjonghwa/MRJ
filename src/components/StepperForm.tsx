@@ -248,7 +248,7 @@ export default function StepperForm() {
 
   if (result) {
     return (
-      <div className="flex flex-col gap-10 animate-in fade-in zoom-in-95 duration-1000 w-full max-w-4xl mx-auto">
+      <div className="flex flex-col gap-10 animate-in fade-in zoom-in-95 duration-1000 w-full max-w-5xl mx-auto">
         {/* Title Section - Cleaned up as requested */}
         <div className="text-center py-10">
           <h2 className="text-4xl md:text-6xl font-serif text-white tracking-tight">당신의 사주 해석</h2>
@@ -295,7 +295,7 @@ export default function StepperForm() {
   }
 
   return (
-    <div className="flex flex-col min-h-[500px]">
+    <div className="flex flex-col min-h-[500px] w-full max-w-xl mx-auto bg-black/30 backdrop-blur-xl rounded-3xl p-8 md:p-10 shadow-2xl border border-white/10 ring-1 ring-white/5">
       {step > 0 && (
         <div className="mb-2 flex justify-start">
           <button onClick={prevStep} className="py-2 text-xs tracking-widest text-[var(--color-hanok-accent)]/80 hover:text-[var(--color-hanok-accent)] transition-colors uppercase font-sans flex items-center gap-2">

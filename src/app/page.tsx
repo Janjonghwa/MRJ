@@ -19,16 +19,14 @@ export default function Home() {
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black/80 via-black/60 to-black/90 z-0" />
 
       {/* Main Content */}
-      <div className="z-10 w-full max-w-lg mt-12 md:mt-24">
+      <div className="z-10 w-full max-w-5xl mt-12 md:mt-24 px-4">
         <header className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-serif text-[var(--color-hanok-accent)] mb-4 tracking-normal drop-shadow-lg">명리재(命理齋)</h1>
-          <p className="text-sm font-sans tracking-[0.2em] md:tracking-[0.3em] text-white/70 uppercase">천 년의 데이터로 당신의 잠재력을 해독합니다</p>
+          <h1 className="text-4xl md:text-6xl font-serif text-[var(--color-hanok-accent)] mb-6 tracking-normal drop-shadow-lg">명리재(命理齋)</h1>
+          <p className="text-sm md:text-base font-sans tracking-[0.3em] text-white/70 uppercase">천 년의 데이터로 당신의 잠재력을 해독합니다</p>
         </header>
 
-        {/* Premium Glassmorphism Container */}
-        <section className="bg-black/30 backdrop-blur-xl rounded-3xl p-8 md:p-10 shadow-2xl border border-white/10 ring-1 ring-white/5">
-          <StepperForm />
-        </section>
+        {/* StepperForm will now manage its own internal spacing and card style */}
+        <StepperForm />
       </div>
     </main>
   );
