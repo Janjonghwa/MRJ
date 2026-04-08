@@ -248,14 +248,14 @@ export default function StepperForm() {
 
   if (result) {
     return (
-      <div className="flex flex-col gap-10 animate-in fade-in zoom-in-95 duration-1000">
+      <div className="flex flex-col gap-10 animate-in fade-in zoom-in-95 duration-1000 w-full max-w-4xl mx-auto">
         {/* Title Section - Cleaned up as requested */}
-        <div className="text-center py-6">
-          <h2 className="text-3xl md:text-5xl font-serif text-white tracking-tight">당신의 사주 해석</h2>
+        <div className="text-center py-10">
+          <h2 className="text-4xl md:text-6xl font-serif text-white tracking-tight">당신의 사주 해석</h2>
         </div>
 
-        {/* Result Content Area - Editorial Card Style */}
-        <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-6 md:p-12 backdrop-blur-sm">
+        {/* Result Content Area - Editorial Card Style (Expanded Width) */}
+        <div className="bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-8 md:p-16 backdrop-blur-md shadow-2xl">
           <div className="prose prose-invert prose-stone max-w-none font-sans leading-relaxed text-left text-white/90">
             <ReactMarkdown 
               remarkPlugins={[remarkGfm]}
