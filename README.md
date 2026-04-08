@@ -45,7 +45,7 @@
 
 ### Backend & AI
 - **Database / ORM:** [PostgreSQL (Supabase)](https://supabase.com/), [Prisma](https://www.prisma.io/)
-- **AI Integration:** [@google/generative-ai](https://github.com/google/generative-ai-js) (Gemini Pro)
+- **AI Integration:** [Groq Cloud](https://groq.com/) (Llama 3.3 70B Versatile)
 - **Fortune / Logic Engine:** `manseryeok` 
 
 ---
@@ -58,8 +58,8 @@
 DATABASE_URL="postgresql://[USER]:[PASSWORD]@[HOST]:[PORT]/[DATABASE_NAME]?pgbouncer=true&connection_limit=1"
 DIRECT_URL="postgresql://[USER]:[PASSWORD]@[HOST]:[PORT]/[DATABASE_NAME]"
 
-# Google AI (Gemini) API Key
-GEMINI_API_KEY="your_google_generative_ai_api_key_here"
+# Groq API Key
+GROQ_API_KEY="your_groq_api_key_here"
 
 # 배포된 사이트 URL (OG 이미지 및 공유 링크 생성용)
 NEXT_PUBLIC_BASE_URL="http://localhost:3000"

@@ -119,7 +119,7 @@ export async function POST(req: Request) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "qwen/qwen3-32b", // Groq의 Qwen 32B 기본 접근 이름 (호환용) 하지만 원하시면 변경 가능
+        model: "llama-3.3-70b-versatile", // Llama 3.3 70B 모델로 변경 (Groq)
         messages: [{ role: "user", content: prompt }],
         temperature: 0.7,
       })
