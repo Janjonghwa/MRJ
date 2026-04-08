@@ -254,7 +254,7 @@ export default function StepperForm() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 gap-8 w-full max-w-xl mx-auto">
+      <div className="flex flex-col items-center justify-center py-12 2xl:py-24 gap-8 2xl:gap-12 w-full max-w-xl 2xl:max-w-3xl mx-auto">
         <Loader2 className="w-16 h-16 animate-spin text-[var(--color-hanok-accent)] drop-shadow-[0_0_15px_rgba(229,192,123,0.5)]" />
         <AnimatePresence mode="wait">
           <motion.h2
@@ -263,7 +263,7 @@ export default function StepperForm() {
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
             transition={{ duration: 0.4 }}
-            className="text-lg md:text-2xl font-serif text-white tracking-wide text-center"
+            className="text-lg md:text-2xl 2xl:text-3xl font-serif text-white tracking-wide text-center"
           >
             {LOADING_MESSAGES[loadingMessageIndex]}
           </motion.h2>
@@ -284,28 +284,28 @@ export default function StepperForm() {
 
   if (result) {
     return (
-      <div className="flex flex-col gap-16 animate-in fade-in zoom-in-95 duration-1000 w-full max-w-6xl mx-auto">
+      <div className="flex flex-col gap-16 2xl:gap-24 animate-in fade-in zoom-in-95 duration-1000 w-full max-w-6xl 2xl:max-w-[85rem] mx-auto">
         {/* Title Section - Cleaned up as requested */}
         <div className="text-center py-10">
-          <h2 className="text-4xl md:text-6xl font-serif text-white tracking-tight">당신의 사주 해석</h2>
+          <h2 className="text-4xl md:text-6xl 2xl:text-[5.5rem] font-serif text-white tracking-tight">당신의 사주 해석</h2>
         </div>
 
         {/* Result Content Area - Truly Wide Editorial Layout */}
-        <div className="bg-black/40 border border-white/10 rounded-[3rem] p-4 md:p-16 backdrop-blur-2xl shadow-2xl ring-1 ring-white/5">
+        <div className="bg-black/40 border border-white/10 rounded-[3rem] 2xl:rounded-[4rem] p-4 md:p-16 2xl:p-24 backdrop-blur-2xl shadow-2xl ring-1 ring-white/5">
           <div className="prose prose-invert prose-stone max-w-none font-sans leading-relaxed text-left text-white/90 px-4 md:px-0">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
                 h3: ({ node, ...props }) => (
-                  <h3 className="text-2xl md:text-4xl font-serif text-[var(--color-hanok-accent)] mt-16 first:mt-0 mb-8 pb-4 border-b border-white/10 tracking-tight" {...props} />
+                  <h3 className="text-2xl md:text-4xl 2xl:text-5xl font-serif text-[var(--color-hanok-accent)] mt-16 2xl:mt-24 first:mt-0 mb-8 2xl:mb-12 pb-4 2xl:pb-6 border-b border-white/10 tracking-tight" {...props} />
                 ),
                 h4: ({ node, ...props }) => (
-                  <h4 className="text-xl md:text-2xl font-bold text-white mt-12 mb-6 flex items-center gap-3 before:content-[''] before:w-1.5 before:h-6 before:bg-[var(--color-hanok-accent)] before:rounded-full" {...props} />
+                  <h4 className="text-xl md:text-2xl 2xl:text-3xl font-bold text-white mt-12 2xl:mt-16 mb-6 2xl:mb-8 flex items-center gap-3 before:content-[''] before:w-1.5 2xl:before:w-2 before:h-6 2xl:before:h-8 before:bg-[var(--color-hanok-accent)] before:rounded-full" {...props} />
                 ),
-                p: ({ node, ...props }) => <p className="mb-8 leading-[1.8] break-keep text-[17px] md:text-lg text-white/80" {...props} />,
-                ul: ({ node, ...props }) => <ul className="list-none space-y-4 my-8 pl-0" {...props} />,
+                p: ({ node, ...props }) => <p className="mb-8 2xl:mb-12 leading-[1.8] 2xl:leading-[2] break-keep text-[17px] md:text-lg 2xl:text-2xl text-white/80" {...props} />,
+                ul: ({ node, ...props }) => <ul className="list-none space-y-4 2xl:space-y-6 my-8 2xl:my-10 pl-0" {...props} />,
                 li: ({ node, ...props }) => (
-                  <li className="relative pl-8 text-[17px] md:text-lg leading-relaxed text-white/70 before:content-['•'] before:absolute before:left-0 before:text-[var(--color-hanok-accent)] before:font-black before:text-2xl" {...props} />
+                  <li className="relative pl-8 2xl:pl-10 text-[17px] md:text-lg 2xl:text-2xl leading-relaxed 2xl:leading-[1.9] text-white/70 before:content-['•'] before:absolute before:left-0 before:text-[var(--color-hanok-accent)] before:font-black before:text-2xl 2xl:before:text-3xl" {...props} />
                 ),
                 strong: ({ node, ...props }) => <strong className="text-[var(--color-hanok-accent)] font-bold px-1" {...props} />,
                 hr: () => <hr className="my-16 border-white/5" />,
@@ -331,7 +331,7 @@ export default function StepperForm() {
   }
 
   return (
-    <div className="flex flex-col min-h-[500px] w-full max-w-xl mx-auto bg-black/30 backdrop-blur-xl rounded-3xl p-8 md:p-10 shadow-2xl border border-white/10 ring-1 ring-white/5">
+    <div className="flex flex-col min-h-[500px] w-full max-w-xl 2xl:max-w-2xl mx-auto bg-black/30 backdrop-blur-xl rounded-3xl p-8 md:p-10 2xl:p-16 shadow-2xl border border-white/10 ring-1 ring-white/5">
       {step > 0 && (
         <div className="mb-2 flex justify-start">
           <button onClick={prevStep} className="py-2 text-xs tracking-widest text-[var(--color-hanok-accent)]/80 hover:text-[var(--color-hanok-accent)] transition-colors uppercase font-sans flex items-center gap-2">
