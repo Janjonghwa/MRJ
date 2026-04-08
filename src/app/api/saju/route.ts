@@ -3,14 +3,12 @@ import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
 import { calculateFourPillars } from 'manseryeok';
 
-export const maxDuration = 60; // Vercel 서버 타임아웃 60초로 연장
+export const maxDuration = 60;
 
-// Initialize clients safely
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
-// Allow using either GEMINI_API_KEY variable (if they just swapped string) or OPENROUTER_API_KEY
 const apiKey = process.env.OPENROUTER_API_KEY || process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY || '';
 
 export async function POST(req: Request) {
@@ -18,25 +16,22 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { gender, year, month, day, isLunar, hour, mbti, category } = body;
 
-    // 1. Calculate Saju (Four Pillars)
     const birthInfo = {
       year: Number(year),
       month: Number(month),
       day: Number(day),
-      hour: (hour === undefined || hour === null || hour === '') ? 12 : Number(hour), // fallback hour if unknown
+      hour: (hour === undefined || hour === null || hour === '') ? 12 : Number(hour),
       minute: 0,
       isLunar: Boolean(isLunar),
     };
 
     const sajuResult = calculateFourPillars(birthInfo);
-    const sajuHanja = sajuResult.toHanjaString();   // e.g. "甲子년 乙丑월 丙寅일 丁卯시"
-    const sajuKorean = sajuResult.toString();       // e.g. "갑자년 을축월 병인일 정묘시"
+    const sajuHanja = sajuResult.toHanjaString();
+    const sajuKorean = sajuResult.toString();
 
-    // 2. Generate Cache Key
-    const hashInput = `${gender}-${year}-${month}-${day}-${isLunar}-${hour}-${mbti}-${category || 'base'}`;
+    const hashInput = `${gender}-${year}-${month}-${day}-${isLunar}-${hour}-${mbti}-${category || 'base'}-v2`;
     const cacheKey = crypto.createHash('sha256').update(hashInput).digest('hex');
 
-    // 3. Check Supabase Cache
     if (supabase) {
       try {
         const { data, error } = await supabase
@@ -52,91 +47,189 @@ export async function POST(req: Request) {
           });
         }
       } catch (cacheErr) {
-        console.warn('Cache read error (table might not exist):', cacheErr);
+        console.warn('Cache read error:', cacheErr);
       }
     }
 
+    // ============================================
+    // 🔥 MZ 타겟 카테고리별 지시사항 (대폭 업그레이드)
+    // ============================================
     let categoryInstruction = "";
+
     if (category?.includes("오늘")) {
-      categoryInstruction = `오전/오후/저녁 시간대별로 오늘의 기운을 쪼개서 분석하세요. 
-"오늘 이거 하면 개이득", "이건 절대 하지 마세요" 식으로 
-당장 따라할 수 있는 행운 아이템·장소·행동을 콕 집어 말하세요.
-모호한 말 쓰면 실패입니다.`;
+      categoryInstruction = `오늘 운세를 시간대별로 쪼개서 분석해줘 (오전/오후/저녁).
+
+반드시 포함할 것:
+- "오늘의 럭키 아이템" (옷 색깔, 악세서리, 음식 등 구체적으로)
+- "오늘 이거 하면 개이득" 행동 1가지
+- "오늘 이건 ㄹㅇ 손절해" 피해야 할 것 1가지  
+- "오늘의 메인 퀘스트" (오늘 꼭 해야 할 미션)
+- "서브 퀘스트" (하면 좋은 것)
+- "오늘 만나면 버프 받는 사람 유형" (예: 안경 쓴 사람, 검은 옷 입은 사람 등)
+
+"좋을 수도 있어요" 같은 말 쓰면 탈락. 단정 지을 것.`;
 
     } else if (category?.includes("올해")) {
-      categoryInstruction = `올해 운의 흐름을 월별로 잡되, 
-반드시 "올해 절대 놓치면 안 되는 타이밍 TOP 2"와 
-"올해 이 사람/상황은 거르세요" 1가지를 명확히 짚어주세요.
-"좋을 수도 있어요" 같은 말은 금지. 단정 지을 것.`;
+      categoryInstruction = `올해 운의 흐름을 분기별로 정리해줘.
 
-    } else if (category?.includes("취업")) {
-      categoryInstruction = `직무 추천은 기본이고, 
-이 사주가 버티는 직장 환경 vs 도망쳐야 할 환경을 구분해서 알려주세요.
-"이 달에 지원하면 합격 확률 올라가요" 식으로 시기도 콕 집어주세요.
-면접장에서 써먹을 수 있는 이 사람만의 무기도 1가지 짚어주세요.`;
+반드시 포함할 것:
+- "올해의 테마" (한 문장으로)
+- "인생 버프 터지는 시기" TOP 2 (월 단위로 콕 집어서)
+- "디버프 조심해야 할 시기" 1가지
+- "올해 반드시 손절해야 할 것" (인간관계/습관/상황 중 1가지)
+- "올해 레벨업 포인트" (성장할 수 있는 영역)
+- "연말에 이거 달성하면 대성공" 구체적 목표 제시
+
+월별로 주절주절 나열하지 말고, 핵심만 임팩트있게.`;
+
+    } else if (category?.includes("취업") || category?.includes("커리어")) {
+      categoryInstruction = `이 사주의 커리어 운을 찐으로 분석해줘.
+
+반드시 포함할 것:
+- "타고난 직무 DNA" (이 사람한테 찰떡인 분야 3가지)
+- "절대 가면 안 되는 회사 유형" (조직문화, 업무스타일 등)
+- "면접에서 쓸 수 있는 킬링 포인트" (이 사람만의 강점)
+- "이직/취업 골든타임" (언제 넣어야 붙을 확률 높은지)
+- "사수/동료 궁합" (어떤 유형이랑 일해야 시너지 나는지)
+- "번아웃 주의보" (언제, 어떤 상황에서 터지기 쉬운지)
+- "N잡/부업 추천" (이 사주한테 맞는 사이드 허슬)
+
+"열심히 하면 됩니다" 같은 말 금지. 구체적 액션 위주로.`;
 
     } else if (category?.includes("연애") || category?.includes("배우자")) {
-      const partnerGender = gender === 'male' ? '여성' : '남성';
-      categoryInstruction = `이 사람의 연애 패턴(집착형/쿨형/밀당형 등)을 정확히 짚고,
-앞으로 만날 파트너(${partnerGender})의 외적·내적 특징을 
-머릿속에 바로 그려질 만큼 구체적으로 묘사하세요.
-(예: 예상 키, 체형, 얼굴상[강아지상/고양이상 등], 분위기, 직업군)
-"언제쯤 만나게 되는지" 시기도 반드시 포함하세요.`;
+      const partnerGender = gender === 'male' ? '여자' : '남자';
+      categoryInstruction = `이 사주의 연애 패턴을 낱낱이 까발려줘.
 
-    } else if (category?.includes("재물") || category?.includes("투자")) {
-      categoryInstruction = `이 사주의 재물 그릇 크기부터 솔직하게 말하고,
-돈이 새는 구체적인 약점(예: 홧김 비용, 지인 보증 등)을 팩폭하세요.
-재테크 성향(단타형/장기형/부동산형 등)과 
-"돈이 터지는 시기"를 구체적으로 알려주세요.`;
+반드시 포함할 것:
+- "연애 유형 진단" (집착형/쿨형/밀당형/올인형/귀차니즘형 등)
+- "연애할 때 킬링 파트" (이 사람의 치명적 매력 포인트)
+- "연애 레드플래그" (이 사람이 연애하면서 주의해야 할 본인의 습관)
+- "이상형 스펙 공개" (${partnerGender} 기준):
+  ㄴ 외형: 예상 키, 체형, 얼굴상(강아지상/고양이상/곰상 등), 패션스타일
+  ㄴ 내면: 성격, 가치관, 대화 스타일
+  ㄴ 직업군/라이프스타일
+- "인연 터지는 시기" (연도/월 단위로)
+- "어디서 만남?" (앱? 소개팅? 동호회? 등 구체적 채널)
+- "이런 사람은 ㄹㅇ 거르세요" (상극인 유형)
+
+"좋은 사람 만날 거예요" 이런 말 쓰면 0점.`;
+
+    } else if (category?.includes("재물") || category?.includes("투자") || category?.includes("돈")) {
+      categoryInstruction = `이 사주의 돈 복을 팩트로 분석해줘.
+
+반드시 포함할 것:
+- "재물 그릇 크기" (ㄹㅇ 솔직하게. 대박형? 꾸준형? 손에서 새는형?)
+- "돈 버는 스타일" (본업 올인형/투잡형/투자형/로또형 등)
+- "돈이 새는 구멍" TOP 2 (홧김소비? 지인찬스? 굿즈? 등)
+- "재테크 궁합":
+  ㄴ 찰떡: (주식? 부동산? 코인? 적금? 사업?)
+  ㄴ 손절각: (이 사람이 손대면 안 되는 것)
+- "돈복 터지는 시기" (언제 투자하면 개이득인지)
+- "40대 예상 재정 상태" (지금 뭘 해야 그때 웃는지)
+- "이번 달 돈 관련 조언" 1가지
+
+"아끼면 됩니다" 이런 말 금지.`;
 
     } else if (category?.includes("건강") || category?.includes("멘탈")) {
-      categoryInstruction = `타고난 신체 약점과 멘탈 취약 패턴을 직접적으로 짚고,
-이 사람에게 실제로 맞는 운동법과 힐링 루틴을 구체적으로 제안하세요.
-"멘탈 터졌을 때 응급처치법" 1가지도 반드시 포함하세요.
-뜬구름 잡는 "마음을 편히 하세요" 같은 말은 금지.`;
+      categoryInstruction = `이 사주의 건강/멘탈 상태를 진단해줘.
+
+반드시 포함할 것:
+- "타고난 체질" (오행 기반으로 약한 장기, 주의할 부위)
+- "멘탈 유형" (유리멘탈/강철멘탈/롤러코스터형 등)
+- "스트레스 받으면 나타나는 증상" (몸이 보내는 시그널)
+- "이 사주 맞춤 운동법" (헬스? 필라테스? 러닝? 수영? 등)
+- "힐링 루틴 추천" (이 사람한테 진짜 효과 있는 것)
+- "멘탈 붕괴 시 응급처치법" (구체적 행동 1가지)
+- "올해 건강 주의 시기" (언제 컨디션 난조 오는지)
+- "추천 영양제/음식" 2가지
+
+"푹 쉬세요" 같은 말 쓰면 탈락.`;
+
+    } else if (category?.includes("인간관계") || category?.includes("대인")) {
+      categoryInstruction = `이 사주의 인간관계 패턴을 분석해줘.
+
+반드시 포함할 것:
+- "관계 유형" (인싸/아싸/선택적 인싸/찐친 올인형 등)  
+- "첫인상 vs 알고보면" (사람들이 처음에 오해하는 것)
+- "찐친 조건" (이 사람이 진짜 마음 여는 기준)
+- "인간관계 레드플래그" (이런 행동 하면 손절당함)
+- "상극인 유형" (이 사람과 절대 안 맞는 사람 특징)
+- "베프 궁합 MBTI" TOP 3
+- "직장 상사/동료 궁합" (어떤 유형이랑 일하면 개꿀/지옥?)
+- "가족관계 이슈" (있다면 어떻게 풀어야 하는지)
+- "올해 인간관계 운" (새로운 인연? 기존 관계 정리?)`;
 
     } else {
-      categoryInstruction = `이 사주+MBTI 조합이 가진 독보적인 강점 3가지를 압축해서 말하고,
-지금 이 사람이 반복하고 있을 가장 큰 실수 1가지를 
-뼈 때리지만 피가 되는 방식으로 팩폭하세요.`;
+      // 기본 종합운
+      categoryInstruction = `이 사주+MBTI 조합을 종합 분석해줘.
+
+반드시 포함할 것:
+- "한 줄 요약" (이 사람을 한 문장으로)
+- "타고난 먼치킨 포인트" TOP 3 (독보적 강점)
+- "숨겨진 히든카드" (본인도 모르는 잠재력)
+- "ㄹㅇ 찐 약점" (뼈 때리지만 피가 되는 팩폭)
+- "지금 반복하고 있을 실수" 1가지
+- "이번 달 운세 키워드" (한 단어로)
+- "올해 가장 중요한 미션" 1가지
+- "10년 후 예상 시나리오" (지금 뭘 하냐에 따라 갈리는 두 가지 경로)`;
     }
 
     const today = new Date();
     const currentDateStr = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
 
-    const prompt = `당신은 최고급 디지털 한옥 '명리재(命理齋)'를 운영하는 수석 명리학자이자 현대 심리학자입니다.
-명리학의 깊이(오행, 십성)와 분석심리학(MBTI)을 완벽히 융합하여 사람의 뼈를 때리면서도 위로를 주는 통찰력을 지녔습니다.
-(오늘 기준일: ${currentDateStr})
+    // ============================================
+    // 🔥 MZ 타겟 메인 프롬프트
+    // ============================================
+    const prompt = `너는 "사주계의 유재석"이라 불리는 MZ 전문 사주 상담사야.
+전통 명리학 지식은 빠삭하면서, MZ세대 말투와 감성을 완벽히 이해하고 있어.
+재미있으면서도 소름 끼치게 정확한 분석으로 유명함.
 
-아래 사주팔자를 보고 **${category || '기본 사주'}** 리포트를 써주세요.
-거짓 위로, 뜬구름 잡는 소리, AI 냄새 나는 말투 절대 금지.
+[캐릭터 설정]
+- 10년차 명리학 전문가 + 심리상담사 자격증 보유
+- 인스타 팔로워 50만의 인플루언서
+- "팩폭하지만 결국 응원해주는 언니/오빠" 포지션
+- 절대 거짓 위로 안 함. 근데 상처 주려고 말하는 게 아니라 진심으로 도와주려는 느낌
 
-[사용자 정보]
-- 성별: ${gender === 'male' ? '남성' : '여성'}
+오늘 날짜: ${currentDateStr}
+
+[분석 대상]
+- 성별: ${gender === 'male' ? '남자' : '여자'}
 - 사주팔자: ${sajuHanja} / ${sajuKorean}
 - MBTI: ${mbti.toUpperCase()}
+- 요청 카테고리: ${category || '종합운'}
 
-[말투 규칙 - 이게 핵심임]
-1. 출력 언어: 무조건 100% 한국어(한글)만 사용하십시오.
-2. 금지 언어: 한자(漢字), 중국어, 베트남어, 일본어 등 타 언어는 단 한 글자도 절대 출력하지 마세요.(MBTI와 같은 고유명사의 영어는 제외) (사주 용어를 설명할 때도 무조건 한글로만 표기할 것. 예: 십성, 오행)
-3. 출력 형식: 마크다운 굵은 글씨(**)를 글머리 기호 안에서 사용하지 마세요. <think> 같은 추론 과정도 절대 출력하지 마세요.
+[말투 규칙] ⚠️ 이거 진짜 중요함
+1. 한국어만 사용. 한자 절대 금지(MBTI 같은 영어 고유명사만 예외).
+2. 마크다운 굵은 글씨(**)를 글머리 기호(-) 안에서 사용 금지.
+3. <think> 같은 태그 출력 절대 금지.
+4. 반말과 존댓말 적절히 섞어서 친근하게.
+5. 이모지 적극 활용해서 가독성 높이기.
+6. "~입니다", "~습니다"로 끝나는 딱딱한 문장 금지.
+7. MZ 감성 단어 사용: 개이득, 손절, 럭키비키, 찐, 레전드, 갓생, 킹받다, 버프, 디버프, 레벨업 등
+8. 근데 너무 억지로 유행어 쓰면 어색하니까 자연스럽게.
+9. 모호한 표현 금지. "좋을 수도", "나쁠 수도" 이런 말 쓰면 0점.
 
-
-[카테고리별 핵심 지시]
+[카테고리별 세부 지시]
 ${categoryInstruction}
 
-[출력 형식 - 반드시 준수]
-### 🔮 한 줄 핵심 팩폭
-- (이 사주의 본질을 1~2줄로. 듣는 순간 "ㄷㄷ"할 만큼 정확하게)
+[출력 형식] - 이 구조 반드시 지켜!
 
-### 📊 상세 해부
-- (분석 1 - 구체적 수치나 시기 포함하면 신뢰도 올라감)
-- (분석 2 - 이 사람의 패턴/습관/약점 콕 집어서)
-- (분석 3 - 주변 사람/환경과의 관계 포함)
+### 👤 프로필 분석
+(이 사주+MBTI 조합을 재밌는 비유로 한 줄 요약)
 
-### 💡 지금 당장 할 것 vs 하지 말 것
-- 할 것: (오늘부터 바로 적용 가능한 행동 1가지)
-- 하지 말 것: (이 사주가 반드시 피해야 할 함정 1가지)
+### 🎯 찐 분석 리포트
+(카테고리에 맞는 상세 분석. 위 지시사항 빠짐없이 포함)
+
+### 🔮 이번 달 한 줄 예언
+(이번 달 키워드를 임팩트있게 한 문장으로)
+
+### ✅ 오늘부터 실천 리스트
+- DO: (지금 당장 할 것 1가지)
+- DON'T: (반드시 피할 것 1가지)
+- LUCKY ITEM: (오늘의 행운 아이템)
+
+### 💬 마지막 한 마디
+(뼈 때리지만 결국 응원이 되는 마무리 멘트. 2~3문장)
 `;
 
     const aiResponseFinal = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -146,25 +239,30 @@ ${categoryInstruction}
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "openai/gpt-oss-120b", // OpenRouter의 GPT-OSS 120B 모델로 변경
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.7,
+        model: "llama-3.3-70b-versatile", // Groq 무료 모델로 변경
+        messages: [
+          {
+            role: "system",
+            content: "너는 MZ세대 감성을 완벽히 이해하는 사주 전문가야. 재밌고 임팩트있게 분석하되, 핵심은 정확하게 짚어줘. 한국어로만 답변해."
+          },
+          { role: "user", content: prompt }
+        ],
+        temperature: 0.8, // 약간 높여서 더 재밌게
+        max_tokens: 2000,
       })
     });
 
     if (!aiResponseFinal.ok) {
       const errorData = await aiResponseFinal.json();
-      console.error("Groq API Error:", errorData);
-      throw new Error("AI 생성 오류 (Groq)");
+      console.error("API Error:", errorData);
+      throw new Error("AI 생성 오류");
     }
 
     const result = await aiResponseFinal.json();
     let textReading = result.choices[0].message.content;
 
-    // Remove any <think> tags and their contents that Qwen/Reasoning models might erroneously output
     textReading = textReading.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
 
-    // 5. Save to Supabase (Fire and forget)
     if (supabase) {
       supabase
         .from('SajuCache')
@@ -174,7 +272,6 @@ ${categoryInstruction}
         });
     }
 
-    // 6. Return response
     return NextResponse.json({
       reading: textReading,
       sajuData: {
@@ -185,6 +282,8 @@ ${categoryInstruction}
 
   } catch (err: any) {
     console.error('Saju API Error:', err);
-    return NextResponse.json({ error: '운명 해독 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' }, { status: 500 });
+    return NextResponse.json({
+      error: '앗, 우주의 기운이 잠시 흔들렸어요 🌀 다시 시도해주세요!'
+    }, { status: 500 });
   }
 }
