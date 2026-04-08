@@ -5,6 +5,36 @@ import { calculateFourPillars } from 'manseryeok';
 
 export const maxDuration = 60;
 
+// 🎯 성별에 맞는 키를 정규분포 느낌으로 뽑아주는 함수
+function getPartnerHeight(gender: 'male' | 'female'): number {
+  const config = {
+    male: { min: 172, max: 192, peak: 180 },
+    female: { min: 155, max: 174, peak: 168 }
+  };
+
+  const { min, max, peak } = config[gender];
+  const pool: number[] = [];
+
+  for (let h = min; h <= max; h++) {
+    const distance = Math.abs(h - peak);
+    let weight = 1;
+
+    if (distance === 0) weight = 15;
+    else if (distance === 1) weight = 10;
+    else if (distance === 2) weight = 6;
+    else if (distance === 3) weight = 3;
+    else if (distance <= 5) weight = 2;
+    else weight = 1;
+
+    for (let i = 0; i < weight; i++) {
+      pool.push(h);
+    }
+  }
+
+  const randomIndex = Math.floor(Math.random() * pool.length);
+  return pool[randomIndex];
+}
+
 // Initialize clients safely
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -102,6 +132,8 @@ export async function POST(req: Request) {
 
     } else if (category?.includes("연애") || category?.includes("배우자")) {
       const partnerGender = gender === 'male' ? '여자' : '남자';
+      const partnerGenderEn = gender === 'male' ? 'female' : 'male';
+      const finalHeight = getPartnerHeight(partnerGenderEn);
       categoryInstruction = `이 사주의 연애 패턴을 낱낱이 까발려줘.
 
 반드시 포함할 것:
@@ -110,7 +142,8 @@ export async function POST(req: Request) {
 - #### 🚩 연애 레드플래그 (주의해야 할 본인의 습관)
 - #### 👤 이상형 스펙 공개 (${partnerGender} 기준):
   ㄴ **외형 (심층 분석)**: 
-    - **키**: ${partnerGender === '남자' ? '172~192 사이' : '155~174 사이'}의 매우 구체적인 숫자 단 1개만 출력. (예: ${partnerGender === '남자' ? '176cm, 179cm, 182cm, 184cm' : '161cm, 164cm, 167cm, 169cm'} 등 매번 다르게). 단, 무조건 165, 170, 180 등 딱 떨어지는 숫자는 가장 피할 것!
+    - **키**: ${finalHeight}cm
+      (🚨경고: 앞서 뽑힌 이 키 숫자를 반드시 그대로 단 1개만 출력할 것. 다른 말 덧붙이지 마.)
     - **비주얼**: 아래 [무한 생성 공식]을 사용하여 매번 겹치지 않는 유니크하고 트렌디한 묘사 창조. (동물상에 맞는 이모지 1개 필수 포함)
     - **내면**: 성격, 가치관, 대화 스타일의 확실한 캐릭터성.
     - **라이프스타일**: 아래 [무한 생성 공식]을 사용하여 구체적 직업군 창조.
@@ -123,7 +156,7 @@ export async function POST(req: Request) {
     - (생성 방향성 예시: 나른한 친칠라상, 맑은 눈의 알파카상, 예민한 아기 호랑이상, 우아한 흑조상, 서늘한 흑표범상 등)
 
     **2. [체형/스타일] 생성 공식**
-    - '슬림탄탄, 잔근육' 같은 뻔한 단어 금지. 라이프스타일이 연상되는 생생한 핏과 스타일을 창조할 것.
+    - '슬림탄탄, 잔근육' 같은 뻔한 단어 금지. 앞서 제공된 **키(${finalHeight}cm)**를 적극 반영하여(예: 남자기준 180 이상/여자기준 168 이상이면 큰 키와 두드러지는 핏, 남자기준 174 이하/여자기준 160 이하면 작지만 비율이 좋은 핏 등) 라이프스타일이 연상되는 생생한 핏과 스타일을 창조할 것.
     - (생성 방향성 예시: 클라이밍으로 다져진 직각어깨와 고프코어룩, 수영을 오래 해서 선이 길쭉한 체형에 무채색 미니멀룩, 여유로운 시티보이룩이 잘 어울리는 듬직한 체형 등)
 
     **3. [구체적 직업군] 생성 공식**
