@@ -13,7 +13,7 @@ const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabase
 // Use Groq API Key and specific model name as requested
 const apiKey = process.env.GROQ_API_KEY || '';
 const apiUrl = "https://api.groq.com/openai/v1/chat/completions";
-const modelId = "openai/gpt-oss-120b";
+const modelId = "qwen/qwen3-32b";
 
 export async function POST(req: Request) {
   try {
