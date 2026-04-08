@@ -5,11 +5,15 @@ import { calculateFourPillars } from 'manseryeok';
 
 export const maxDuration = 60;
 
+// Initialize clients safely
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
-const apiKey = process.env.OPENROUTER_API_KEY || process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY || '';
+// Use Groq API Key and specific model name as requested
+const apiKey = process.env.GROQ_API_KEY || '';
+const apiUrl = "https://api.groq.com/openai/v1/chat/completions";
+const modelId = "openai/gpt-oss-120b";
 
 export async function POST(req: Request) {
   try {
@@ -34,13 +38,13 @@ export async function POST(req: Request) {
 
     if (supabase) {
       try {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from('SajuCache')
           .select('reading')
           .eq('cache_key', cacheKey)
           .single();
 
-        if (data && data.reading) {
+        if (data?.reading) {
           return NextResponse.json({
             reading: data.reading,
             sajuData: { hanja: sajuHanja, korean: sajuKorean }
@@ -50,6 +54,9 @@ export async function POST(req: Request) {
         console.warn('Cache read error:', cacheErr);
       }
     }
+
+
+
 
     // ============================================
     // 🔥 MZ 타겟 카테고리별 지시사항 (대폭 업그레이드)
@@ -232,14 +239,14 @@ ${categoryInstruction}
 (뼈 때리지만 결국 응원이 되는 마무리 멘트. 2~3문장)
 `;
 
-    const aiResponseFinal = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    const aiResponseFinal = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile", // Groq 무료 모델로 변경
+        model: modelId,
         messages: [
           {
             role: "system",
@@ -247,7 +254,7 @@ ${categoryInstruction}
           },
           { role: "user", content: prompt }
         ],
-        temperature: 0.8, // 약간 높여서 더 재밌게
+        temperature: 0.8,
         max_tokens: 2000,
       })
     });
