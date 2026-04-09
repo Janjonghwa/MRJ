@@ -166,16 +166,16 @@ export default function StepperForm() {
         </label>
         <div className="grid grid-cols-3 gap-3 md:gap-4 2xl:gap-6">
           <div className="relative flex items-center">
-            <input type="number" placeholder="YYYY" className="w-full p-4 2xl:p-6 pr-6 2xl:pr-8 bg-white/5 border border-white/10 rounded-xl text-center text-white 2xl:text-2xl placeholder-white/30 focus:outline-none focus:border-[var(--color-hanok-accent)] transition-colors" value={formData.year} onChange={e => updateForm('year', e.target.value)} />
-            <span className="absolute right-3 md:right-4 2xl:right-6 text-white/40 text-xs md:text-sm 2xl:text-xl font-serif pointer-events-none">년</span>
+            <input type="number" placeholder="YYYY" className="w-full p-4 2xl:p-6 pr-6 2xl:pr-8 bg-white/5 border border-white/10 rounded-xl text-center text-white text-sm md:text-base 2xl:text-lg placeholder-white/30 focus:outline-none focus:border-[var(--color-hanok-accent)] transition-colors" value={formData.year} onChange={e => updateForm('year', e.target.value)} />
+            <span className="absolute right-3 md:right-4 2xl:right-6 text-white/40 text-xs md:text-sm 2xl:text-base font-serif pointer-events-none">년</span>
           </div>
           <div className="relative flex items-center">
-            <input type="number" placeholder="MM" min="1" max="12" className="w-full p-4 2xl:p-6 pr-6 2xl:pr-8 bg-white/5 border border-white/10 rounded-xl text-center text-white 2xl:text-2xl placeholder-white/30 focus:outline-none focus:border-[var(--color-hanok-accent)] transition-colors" value={formData.month} onChange={e => updateForm('month', e.target.value)} />
-            <span className="absolute right-3 md:right-4 2xl:right-6 text-white/40 text-xs md:text-sm 2xl:text-xl font-serif pointer-events-none">월</span>
+            <input type="number" placeholder="MM" min="1" max="12" className="w-full p-4 2xl:p-6 pr-6 2xl:pr-8 bg-white/5 border border-white/10 rounded-xl text-center text-white text-sm md:text-base 2xl:text-lg placeholder-white/30 focus:outline-none focus:border-[var(--color-hanok-accent)] transition-colors" value={formData.month} onChange={e => updateForm('month', e.target.value)} />
+            <span className="absolute right-3 md:right-4 2xl:right-6 text-white/40 text-xs md:text-sm 2xl:text-base font-serif pointer-events-none">월</span>
           </div>
           <div className="relative flex items-center">
-            <input type="number" placeholder="DD" min="1" max="31" className="w-full p-4 2xl:p-6 pr-6 2xl:pr-8 bg-white/5 border border-white/10 rounded-xl text-center text-white 2xl:text-2xl placeholder-white/30 focus:outline-none focus:border-[var(--color-hanok-accent)] transition-colors" value={formData.day} onChange={e => updateForm('day', e.target.value)} />
-            <span className="absolute right-3 md:right-4 2xl:right-6 text-white/40 text-xs md:text-sm 2xl:text-xl font-serif pointer-events-none">일</span>
+            <input type="number" placeholder="DD" min="1" max="31" className="w-full p-4 2xl:p-6 pr-6 2xl:pr-8 bg-white/5 border border-white/10 rounded-xl text-center text-white text-sm md:text-base 2xl:text-lg placeholder-white/30 focus:outline-none focus:border-[var(--color-hanok-accent)] transition-colors" value={formData.day} onChange={e => updateForm('day', e.target.value)} />
+            <span className="absolute right-3 md:right-4 2xl:right-6 text-white/40 text-xs md:text-sm 2xl:text-base font-serif pointer-events-none">일</span>
           </div>
         </div>
         <button
