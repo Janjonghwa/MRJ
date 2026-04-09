@@ -21,9 +21,9 @@ function getPartnerHeight(gender: 'male' | 'female'): number {
 
     if (distance === 0) weight = 8;
     else if (distance === 1) weight = 7;
-    else if (distance === 2) weight = 6;
-    else if (distance === 3) weight = 4;
-    else if (distance <= 5) weight = 3;
+    else if (distance === 2) weight = 5;
+    else if (distance === 3) weight = 3;
+    else if (distance <= 5) weight = 1;
     else weight = 1;
 
     for (let i = 0; i < weight; i++) {
