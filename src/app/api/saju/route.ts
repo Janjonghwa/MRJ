@@ -351,12 +351,13 @@ ${categoryInstruction}
     textReading = textReading.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
 
     if (supabase) {
-      supabase
+      const { error: saveError } = await supabase
         .from('SajuCache')
-        .insert([{ hash_key: cacheKey, llm_result: textReading }])
-        .then(({ error }) => {
-          if (error) console.error('Cache save error:', error);
-        });
+        .insert([{ hash_key: cacheKey, llm_result: textReading }]);
+        
+      if (saveError) {
+        console.error('Cache save error:', saveError);
+      }
     }
 
     return NextResponse.json({
