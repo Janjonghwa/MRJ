@@ -336,7 +336,7 @@ ${categoryInstruction}
           { role: "user", content: prompt }
         ],
         temperature: 0.7,
-        max_tokens: 2700,
+        max_tokens: 2800,
       })
     });
 
@@ -354,7 +354,7 @@ ${categoryInstruction}
       const { error: saveError } = await supabase
         .from('SajuCache')
         .insert([{ hash_key: cacheKey, llm_result: textReading }]);
-        
+
       if (saveError) {
         console.error('Cache save error:', saveError);
       }
