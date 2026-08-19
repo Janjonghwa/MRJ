@@ -67,6 +67,7 @@ NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 
 ---
 
+
 ## 🚀 설치 및 실행
 
 1. **저장소 클론하기**
@@ -102,7 +103,7 @@ saju2/
 ├── prisma/                   # 데이터베이스 스키마(schema.prisma) 파일
 ├── src/
 │   ├── app/                  # Next.js App Router (페이지, API 라우트, OG 라우트 등)
-│   ├── components/           # 재사용 가능한 공통 UI 컴포넌트
+│   ├── components/           # 재사용 가능한 공통 UI 컴포넌트 모음
 │   ├── lib/                  # 유틸리티, DB 클라이언트 세팅 및 코어 로직
 │   └── ...
 ├── tailwind.config.ts        # Tailwind CSS 커스텀 (디지털 한옥 테마 컬러 등)
